@@ -1,0 +1,108 @@
+---
+title: "Docker Run"
+---
+
+In this section, we will review the `docker run` command. The `docker run` command enables us to spin an image into a container. Let's use the `run` command to launch the `r-base` image we pulled in the previous section inside a container:
+
+``` shell
+docker run rocker/r-base
+```
+
+This will result in the below warning and error:
+
+``` shell
+WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+Fatal error: you must specify '--save', '--no-save' or '--vanilla'
+```
+The main reason for getting this error is related to the execution type of the container, which is not aligned with the `CMD` command. To solve this issue, we will run the container in an interactive mode using the `--interactive --tty` arguments:
+
+
+```shell
+docker run --interactive --tty rocker/r-base
+```
+
+This will open the R session inside a container:
+
+```shell
+WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+>
+```
+
+The image is now running inside a container. We can use the `docker ps` command to get a list of active containers:
+
+```shell
+docker ps
+```
+
+And you should expect the below output:
+
+``` shell
+CONTAINER ID   IMAGE                                                                           COMMAND                  CREATED          STATUS                  PORTS                                       NAMES
+8e4025e4b774   rocker/r-base                                                                   "R"                      14 seconds ago   Up 14 seconds                                                       peaceful_shaw
+
+```
+
+By default, Docker assigns a random name to the image if the user does not set a name. In this case, it named the image `peaceful_shaw`. In addition, it provides the container ID, which enables the user to reference the container when applying some commands.
+
+Another useful command is the `docker exec`, which enables us to SSH a running container. It is a very useful command when you want to test or debug features on the image while running. We will use the container ID from the `docker ps` output and open a `bash` terminal:
+
+``` shell
+docker exec -it 8e4025e4b774 bash   
+```
+This will open a new terminal inside the container and enable us to access the container file system:
+
+``` shell
+root@8e4025e4b774:/#
+```
+
+For example, we can print the files and folders in the container root folder using the `ls` command:
+
+```shell
+root@8e4025e4b774:/# ls
+bin  boot  dev	etc  home  lib	lib64  media  mnt  opt	proc  root  run  sbin  srv  sys  tmp  usr  var
+```
+
+We can create a script and run it either from the open R terminal using the `source` command or directly from the SSH terminal:
+
+``` shell
+root@8e4025e4b774:/# echo 'print("Hello World!")' > hello-world.R
+root@8e4025e4b774:/# Rscript 'hello-world.R'
+[1] "Hello World!"
+```
+
+To stop the session, use the R's `quit()` command:
+
+```shell
+> quit()
+Save workspace image? [y/n/c]: n
+```
+
+Alternatively, you can use the `docker kill` command, which will stop the run time of the container:
+
+```shell
+docker kill 8e4025e4b774
+```
+
+
+One of the issues of this workflow is that the container, by default, is running in ephemeral mode. In the next section, we will review how to mount a local folder to the container to make the code persistence.
+
+

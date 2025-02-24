@@ -1,0 +1,44 @@
+project:
+  type: website
+  execute-dir: project
+  output-dir: docs
+  render:
+    - index.qmd
+    - settings.qmd
+    - docker-intro.qmd
+    - cli-commands.qmd
+    - docker-pull.qmd
+    - docker-run.qmd
+    - docker-mount.qmd
+    - docker-env.qmd
+    - docker-rstudio.qmd
+
+website:
+  title: "R/Medicine R VScode Workshop"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+  sidebar:
+    style: "docked"
+    search: true
+    contents: 
+      - index.qmd
+      - settings.qmd
+      - docker-intro.qmd
+      - cli-commands.qmd
+      - docker-pull.qmd
+      - docker-run.qmd
+      - docker-mount.qmd
+      - docker-env.qmd
+      - docker-rstudio.qmd
+
+format:
+  html:
+    theme:
+      light: pandoc
+      dark: darkly
+    toc: true
+
+
+

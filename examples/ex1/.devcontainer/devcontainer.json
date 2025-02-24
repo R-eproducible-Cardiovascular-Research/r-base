@@ -1,0 +1,4 @@
+{
+    "name": "VScode R Workshop - Example 1",
+    "image": "rocker/r-base"
+}
